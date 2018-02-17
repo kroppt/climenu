@@ -12,7 +12,7 @@ type MenuItem struct {
 	Text     string
 	ID       string
 	SubMenu  *Menu
-	Selected bool  // For checkboxes.
+	Selected bool // For checkboxes.
 }
 
 const (
@@ -73,13 +73,17 @@ func (m *Menu) AddMenuItem(text string, id string) *MenuItem {
 }
 
 func (m *Menu) CursorDown() {
-	m.CursorPos = (m.CursorPos + 1) % len(m.MenuItems)
-	m.DrawMenuItems(true)
+	if len(m.MenuItems) > 1 {
+		m.CursorPos = (m.CursorPos + 1) % len(m.MenuItems)
+		m.DrawMenuItems(true)
+	}
 }
 
 func (m *Menu) CursorUp() {
-	m.CursorPos = (m.CursorPos + len(m.MenuItems) - 1) % len(m.MenuItems)
-	m.DrawMenuItems(true)
+	if len(m.MenuItems) > 1 {
+		m.CursorPos = (m.CursorPos + len(m.MenuItems) - 1) % len(m.MenuItems)
+		m.DrawMenuItems(true)
+	}
 }
 
 func (m *Menu) ToggleSelection() {
@@ -119,7 +123,7 @@ func (m *Menu) DrawMenuItems(redraw bool) {
 
 		prefix := "  "
 		if m.Type == ButtonType {
-			prefix = fmt.Sprintf("%d: ", index + 1)
+			prefix = fmt.Sprintf("%d: ", index+1)
 		} else if m.Type == CheckboxType {
 			if menuItem.Selected {
 				prefix = "\u25c9 "
@@ -142,7 +146,7 @@ func (m *Menu) Render() {
 		fmt.Println(m.Heading)
 	}
 
-	fmt.Printf("%s\n", goterm.Color(goterm.Bold(m.Question) + ":", goterm.GREEN))
+	fmt.Printf("%s\n", goterm.Color(goterm.Bold(m.Question)+":", goterm.GREEN))
 
 	m.DrawMenuItems(false)
 
@@ -221,7 +225,9 @@ func (m *Menu) RunInternal() (results []string, escape bool) {
 			if num < len(m.MenuItems) {
 				// Redraw items with new cursor selection.
 				m.CursorPos = num
-				m.DrawMenuItems(true)
+				if len(m.MenuItems) > 1 {
+					m.DrawMenuItems(true)
+				}
 				fmt.Println()
 
 				menuItem := m.MenuItems[num]
