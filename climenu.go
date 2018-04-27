@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/buger/goterm"
 )
@@ -123,7 +124,11 @@ func (m *Menu) DrawMenuItems(redraw bool) {
 
 		prefix := "  "
 		if m.Type == ButtonType {
-			prefix = fmt.Sprintf("%d: ", index+1)
+			prefix = fmt.Sprintf("%d:", index+1)
+			s := strconv.Itoa(index + 1)
+			for i := 2 - len(s); i >= 0; i-- {
+				prefix += " "
+			}
 		} else if m.Type == CheckboxType {
 			if menuItem.Selected {
 				prefix = "\u25c9 "
